@@ -1,4 +1,5 @@
 ﻿using DiscordRPC;
+using DiscordRPC.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,17 @@ namespace YoYoStudio
                 private ModulePackage IdeInterface { get; set; }
                 private DiscordRpcClient RpcClient { get; set; }
                 private ZplDiscordPluginLogger UILogger { get; set; }
+                private Assets RichPresenceAssets { get; set; }
                 private object LockObject { get; set; }
+
+                public void OnInitialised()
+                {
+                    RpcClient.SetPresence(new RichPresence()
+                    {
+                        State = "In the menu...",
+                        Assets = RichPresenceAssets
+                    });
+                }
 
                 public void OnProjectLoaded()
                 {
@@ -27,10 +38,7 @@ namespace YoYoStudio
                     {
                         State = ProjectInfo.Current.name,
                         Details = "Editing a project...",
-                        Assets = new Assets()
-                        {
-                            LargeImageKey = "gmsbiglogo"
-                        }
+                        Assets = RichPresenceAssets
                     });
                 }
 
@@ -39,10 +47,7 @@ namespace YoYoStudio
                     RpcClient.SetPresence(new RichPresence()
                     {
                         State = "In the menu...",
-                        Assets = new Assets()
-                        {
-                            LargeImageKey = "gmsbiglogo"
-                        }
+                        Assets = RichPresenceAssets
                     });
                 }
 
@@ -59,18 +64,32 @@ namespace YoYoStudio
                     }
                 }
 
+                public void OnRpcError(object sender, ErrorMessage args)
+                {
+                    UILogger.Trace("OnRpcError(): args -> code='{0}',message='{1}'.", args.Code, args.Message);
+                }
+
                 public void Initialise(ModulePackage _ide)
                 {
                     LockObject = new object();
                     IdeInterface = _ide;
                     UILogger = new ZplDiscordPluginLogger(); // <-- this will log into ui.log
+                    RichPresenceAssets = new Assets();
                     RpcClient = new DiscordRpcClient("857230153015754772", -1, UILogger, false);
                     // do not dispatch RPC events automatically
                     // they will be handled in the IDE.Tick() method on the IDE thread for consistency
 
+                    // set assets here:
+                    RichPresenceAssets.LargeImageKey = "gmsbiglogo";
+
+                    RpcClient.OnError += OnRpcError;
+
                     RpcClient.Initialize();
+
+                    // set callbacks here:
                     IDE.OnProjectLoaded += OnProjectLoaded;
                     IDE.OnProjectClosed += OnProjectClosed;
+                    IDE.OnInitialised += OnInitialised;
                 }
 
                 #region IDisposable Support
