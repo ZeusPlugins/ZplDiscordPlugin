@@ -93,7 +93,8 @@ namespace YoYoStudio
                     // set callbacks here:
                     IDE.OnProjectLoaded += OnProjectLoaded;
                     IDE.OnProjectClosed += OnProjectClosed;
-                    IDE.OnInitialised += OnInitialised;
+                    //IDE.OnInitialised += OnInitialised;
+                    OnInitialised();
                 }
 
                 
