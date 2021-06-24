@@ -54,9 +54,6 @@ namespace YoYoStudio
                 [Function("discord_zpl_tick", "ide_tick", "Dispatches the RPC events.")]
                 public void Tick()
                 {
-                    if (!IDE.IsProjectLoadingComplete)
-                        return;
-
                     lock (LockObject)
                     {
                         if (RpcClient != null)
