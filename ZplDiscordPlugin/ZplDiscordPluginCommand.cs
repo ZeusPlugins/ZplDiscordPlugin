@@ -69,6 +69,12 @@ namespace YoYoStudio
                     UILogger.Trace("OnRpcError(): args -> code='{0}',message='{1}'.", args.Code, args.Message);
                 }
 
+                public void OnRpcReady(object sender, ReadyMessage args)
+                {
+                    UILogger.Trace("OnRpcReady(): args -> v='{0}'.", args.Version);
+                    RpcClient.SynchronizeState();
+                }
+
                 public void Initialise(ModulePackage _ide)
                 {
                     LockObject = new object();
@@ -83,6 +89,7 @@ namespace YoYoStudio
                     RichPresenceAssets.LargeImageKey = "gmsbiglogo";
 
                     RpcClient.OnError += OnRpcError;
+                    RpcClient.OnReady += OnRpcReady;
 
                     RpcClient.Initialize();
 
@@ -91,6 +98,8 @@ namespace YoYoStudio
                     IDE.OnProjectClosed += OnProjectClosed;
                     IDE.OnInitialised += OnInitialised;
                 }
+
+                
 
                 #region IDisposable Support
                 private bool disposed = false; // To detect redundant calls
