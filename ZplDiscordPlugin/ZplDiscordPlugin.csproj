@@ -93,6 +93,6 @@
     <Error Condition="!Exists('..\packages\ILMerge.3.0.41\build\ILMerge.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILMerge.3.0.41\build\ILMerge.props'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>$(ILMergeConsolePath) /out:ZplDiscordPluginMerged.dll ZplDiscordPlugin.dll DiscordRPC.dll Newtonsoft.Json.dll</PostBuildEvent>
+    <PostBuildEvent>$(ILMergeConsolePath) ZplDiscordPlugin.dll /out:ZplDiscordPluginMerged.dll Newtonsoft.Json.dll DiscordRPC.dll</PostBuildEvent>
   </PropertyGroup>
 </Project>

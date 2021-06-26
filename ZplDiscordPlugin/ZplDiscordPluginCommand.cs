@@ -1,10 +1,6 @@
-﻿using DiscordRPC;
+﻿using System;
+using DiscordRPC;
 using DiscordRPC.Message;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using YoYoStudio.Plugins.Attributes;
 using YoYoStudio.Resources;
 
@@ -28,7 +24,8 @@ namespace YoYoStudio
                     RpcClient.SetPresence(new RichPresence()
                     {
                         State = "In the menu...",
-                        Assets = RichPresenceAssets
+                        Assets = RichPresenceAssets,
+                        Timestamps = Timestamps.Now
                     });
                 }
 
@@ -38,7 +35,8 @@ namespace YoYoStudio
                     {
                         State = ProjectInfo.Current.name,
                         Details = "Editing a project...",
-                        Assets = RichPresenceAssets
+                        Assets = RichPresenceAssets,
+                        Timestamps = Timestamps.Now
                     });
                 }
 
@@ -46,12 +44,13 @@ namespace YoYoStudio
                 {
                     RpcClient.SetPresence(new RichPresence()
                     {
-                        State = "In the menu...",
-                        Assets = RichPresenceAssets
+                        State = "Closed the project...",
+                        Assets = RichPresenceAssets,
+                        Timestamps = Timestamps.Now
                     });
                 }
 
-                [Function("discord_zpl_tick", "ide_tick", "Dispatches the RPC events.")]
+                [Function("discord_zpl_tick", "ide_tick", "Dispatches the RPC events on the IDE thread.")]
                 public void Tick()
                 {
                     lock (LockObject)
@@ -69,7 +68,7 @@ namespace YoYoStudio
                 public void OnRpcReady(object sender, ReadyMessage args)
                 {
                     UILogger.Trace("OnRpcReady(): args -> v='{0}'.", args.Version);
-                    RpcClient.SynchronizeState();
+                    OnInitialised();
                 }
 
                 public void Initialise(ModulePackage _ide)
@@ -94,10 +93,7 @@ namespace YoYoStudio
                     IDE.OnProjectLoaded += OnProjectLoaded;
                     IDE.OnProjectClosed += OnProjectClosed;
                     //IDE.OnInitialised += OnInitialised;
-                    OnInitialised();
                 }
-
-                
 
                 #region IDisposable Support
                 private bool disposed = false; // To detect redundant calls
@@ -120,7 +116,8 @@ namespace YoYoStudio
                     }
                 }
 
-                ~ZplDiscordPluginCommand() {
+                ~ZplDiscordPluginCommand()
+                {
                     // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
                     Dispose(false);
                 }
