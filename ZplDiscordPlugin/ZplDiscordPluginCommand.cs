@@ -13,20 +13,28 @@ namespace YoYoStudio
             [ModuleName("ZPL Discord", "Handles the Rich Presence connection.")]
             public class ZplDiscordPluginCommand : IModule, IDisposable
             {
-                private ModulePackage IdeInterface { get; set; }
-                private DiscordRpcClient RpcClient { get; set; }
-                private ZplDiscordPluginLogger UILogger { get; set; }
-                private Assets RichPresenceAssets { get; set; }
-                private object LockObject { get; set; }
+                public ModulePackage IdeInterface { get; set; }
+                public DiscordRpcClient RpcClient { get; set; }
+                public ZplDiscordPluginLogger UILogger { get; set; }
+                public Assets RichPresenceAssets { get; set; }
+                public object LockObject { get; set; }
 
                 public void OnInitialised()
                 {
+                    if (IDE.IsProjectLoadingComplete)
+                    {
+                        UILogger.Trace("OnInitialised(): Already in a project.");
+                        return;
+                    }
+
                     RpcClient.SetPresence(new RichPresence()
                     {
                         State = "In the menu...",
                         Assets = RichPresenceAssets,
                         Timestamps = Timestamps.Now
                     });
+
+                    UILogger.Trace("OnInitialised(): Ok");
                 }
 
                 public void OnProjectLoaded()
@@ -38,6 +46,8 @@ namespace YoYoStudio
                         Assets = RichPresenceAssets,
                         Timestamps = Timestamps.Now
                     });
+
+                    UILogger.Trace("OnProjectLoaded()");
                 }
 
                 public void OnProjectClosed()
@@ -48,6 +58,8 @@ namespace YoYoStudio
                         Assets = RichPresenceAssets,
                         Timestamps = Timestamps.Now
                     });
+
+                    UILogger.Trace("OnProjectClosed()");
                 }
 
                 [Function("discord_zpl_tick", "ide_tick", "Dispatches the RPC events on the IDE thread.")]
@@ -131,7 +143,6 @@ namespace YoYoStudio
                     GC.SuppressFinalize(this);
                 }
                 #endregion
-
             }
         }
     }
