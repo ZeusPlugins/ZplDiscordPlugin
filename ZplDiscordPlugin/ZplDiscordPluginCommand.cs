@@ -1,6 +1,7 @@
 ﻿using System;
 using DiscordRPC;
 using DiscordRPC.Message;
+using YoYoStudio.GUI;
 using YoYoStudio.Plugins.Attributes;
 using YoYoStudio.Resources;
 
@@ -14,6 +15,7 @@ namespace YoYoStudio
             public class ZplDiscordPluginCommand : IModule, IDisposable
             {
                 public ModulePackage IdeInterface { get; set; }
+                public ModulePackage Package => IdeInterface;
                 public DiscordRpcClient RpcClient { get; set; }
                 public ZplDiscordPluginLogger UILogger { get; set; }
                 public Assets RichPresenceAssets { get; set; }
@@ -52,12 +54,15 @@ namespace YoYoStudio
 
                 public void OnProjectClosed()
                 {
+                    /*
                     RpcClient.SetPresence(new RichPresence()
                     {
                         State = "Closed the project...",
                         Assets = RichPresenceAssets,
                         Timestamps = Timestamps.Now
                     });
+                    */
+                    RpcClient.ClearPresence();
 
                     UILogger.Trace("OnProjectClosed()");
                 }
@@ -117,6 +122,7 @@ namespace YoYoStudio
                         if (disposing)
                         {
                             // TODO: dispose managed state (managed objects).
+                            RpcClient.ClearPresence();
                             RpcClient.Dispose();
                         }
 
