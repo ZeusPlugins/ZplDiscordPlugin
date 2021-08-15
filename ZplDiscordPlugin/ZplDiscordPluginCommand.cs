@@ -1,7 +1,7 @@
 ﻿using System;
 using DiscordRPC;
+using DiscordRPC.Logging;
 using DiscordRPC.Message;
-using YoYoStudio.GUI;
 using YoYoStudio.Plugins.Attributes;
 using YoYoStudio.Resources;
 
@@ -90,8 +90,14 @@ namespace YoYoStudio
 
                 public void Initialise(ModulePackage _ide)
                 {
-                    LockObject = new object();
                     IdeInterface = _ide;
+                    OnIdeInitialised();
+                }
+
+                public void OnIdeInitialised()
+                {
+                    LockObject = new object();
+
                     UILogger = new ZplDiscordPluginLogger(); // <-- this will log into ui.log
                     RichPresenceAssets = new Assets();
                     RpcClient = new DiscordRpcClient("857230153015754772", -1, UILogger, false);
@@ -129,6 +135,8 @@ namespace YoYoStudio
                         // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                         // TODO: set large fields to null.
                         RpcClient = null;
+                        UILogger = null;
+                        IdeInterface = null;
 
                         disposed = true;
                     }
